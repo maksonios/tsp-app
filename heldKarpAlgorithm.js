@@ -1,10 +1,19 @@
+import {drawRoute, buildMatrix, updateWaypointsList, clearCoordinates} from "./helpers.js";
+
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFrdXNvbmlvc3UiLCJhIjoiY2xuZzV3aWFjMHU3NDJqdGN5cXg3bm1lNyJ9.6T8prpHQy2DJ1lP8uOgJlg';
 
 let map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [-73.989, 40.733],
+    center: [24.027, 49.842],
     zoom: 12
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const clearBtn = document.getElementById('clear-coordinates-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', clearCoordinates.bind(null, waypoints, map, currentMarkers));
+    }
 });
 
 const currentMarkers = [];
@@ -38,47 +47,19 @@ map.on('click', async function (e) {
         const newLngLat = marker.getLngLat();
         const markerIndex = marker.getElement().getAttribute('data-waypoint-index');
         waypoints[markerIndex] = [newLngLat.lng, newLngLat.lat];
-        updateWaypointsList();
+        updateWaypointsList(waypoints);
         const distanceMatrix = await buildMatrix(waypoints);
         const result = heldKarp(distanceMatrix);
         tour = result.path;
-        drawRoute(tour);
+        drawRoute(map, tour, waypoints);
     });
 
-    updateWaypointsList();
+    updateWaypointsList(waypoints);
 
     if (waypoints.length > 1) {
-        drawRoute(tour);
+        drawRoute(map, tour, waypoints);
     }
 });
-
-function updateWaypointsList() {
-    const waypointsList = document.getElementById("waypoints");
-    waypointsList.innerHTML = '';
-    waypoints.forEach(function(waypoint, index) {
-        const li = document.createElement("li");
-        li.textContent = `Point ${String.fromCharCode(65 + index)} (${waypoint[0].toFixed(3)}, ${waypoint[1].toFixed(3)})`;
-        waypointsList.appendChild(li);
-    });
-}
-
-function clearCoordinates() {
-    waypoints.length = 0;
-    updateWaypointsList();
-    currentMarkers.forEach((marker) => marker.remove());
-    currentMarkers.length = 0;
-}
-
-async function buildMatrix(waypoints) {
-    const coordinates = waypoints.map(point => point.join(',')).join(';');
-    const query1 = await fetch(
-        `https://api.mapbox.com/directions-matrix/v1/mapbox/driving/${coordinates}?annotations=distance&access_token=${mapboxgl.accessToken}`,
-        { method: 'GET' }
-    );
-
-    const json = await query1.json();
-    return json.distances;
-}
 
 function heldKarp(distances) {
     const startTime = performance.now();
@@ -147,40 +128,4 @@ function heldKarp(distances) {
         distance: distance,
         path: path,
     };
-}
-
-function drawRoute(bestTour) {
-    const coordinates = bestTour.map(index => waypoints[index]);
-    const routeGeoJSON = {
-        'type': 'Feature',
-        'properties': {},
-        'geometry': {
-            'type': 'LineString',
-            'coordinates': coordinates
-        }
-    };
-
-    if (map.getSource('route')) {
-        map.removeLayer('route');
-        map.removeSource('route');
-    }
-
-    map.addSource('route', {
-        'type': 'geojson',
-        'data': routeGeoJSON
-    });
-
-    map.addLayer({
-        'id': 'route',
-        'type': 'line',
-        'source': 'route',
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': '#888',
-            'line-width': 6
-        }
-    });
 }
