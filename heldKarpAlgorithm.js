@@ -81,6 +81,8 @@ async function buildMatrix(waypoints) {
 }
 
 function heldKarp(distances) {
+    const startTime = performance.now();
+
     const n = distances.length;
     const VISITED_ALL = (1 << n) - 1;
     let memo = Array.from({ length: n }, () => Array(VISITED_ALL).fill(null));
@@ -134,9 +136,16 @@ function heldKarp(distances) {
 
     tsp(0, 1);
 
+    const path = findPath();
+    const distance = memo[0][1];
+    const endTime = performance.now();
+    console.log("Best tour: ", path);
+    console.log("Distance: ", distance);
+    console.log(`Held-Karp Execution Time: ${endTime - startTime} milliseconds`);
+
     return {
-        distance: memo[0][1],
-        path: findPath(),
+        distance: distance,
+        path: path,
     };
 }
 
