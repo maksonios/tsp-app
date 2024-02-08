@@ -67,59 +67,39 @@ function heldKarp(distances) {
     const n = distances.length;
     const VISITED_ALL = (1 << n) - 1;
     let memo = Array.from({ length: n }, () => Array(VISITED_ALL).fill(null));
-    let next = Array.from({ length: n }, () => Array(VISITED_ALL).fill(null));
 
     function tsp(pos, mask) {
         if (mask === VISITED_ALL) {
-            return [distances[pos][0], 0];
+            return { cost: distances[pos][0], path: [0] };
         }
         if (memo[pos][mask] != null) {
-            return [memo[pos][mask], next[pos][mask]];
+            return memo[pos][mask];
         }
 
         let ans = Infinity;
-        let nextCity = -1;
+        let bestPath = [];
         for (let city = 0; city < n; city++) {
             if ((mask & (1 << city)) === 0) {
-                let [newAns, _] = tsp(city, mask | (1 << city));
-                newAns += distances[pos][city];
+                let res = tsp(city, mask | (1 << city));
+                let newAns = res.cost + distances[pos][city];
 
                 if (newAns < ans) {
                     ans = newAns;
-                    nextCity = city;
+                    bestPath = [city, ...res.path];
                 }
             }
         }
-        memo[pos][mask] = ans;
-        next[pos][mask] = nextCity;
-        return [ans, nextCity];
+
+        memo[pos][mask] = { cost: ans, path: bestPath };
+        return memo[pos][mask];
     }
 
-    function findPath() {
-        let mask = 1;
-        let pos = 0;
-        let path = [0];
+    let result = tsp(0, 1);
 
-        while (true) {
-            let nextPos = next[pos][mask];
-            if (nextPos === -1 || nextPos === undefined) break;
-
-            path.push(nextPos);
-            mask |= (1 << nextPos);
-            pos = nextPos;
-
-            if (mask === VISITED_ALL) break;
-        }
-
-        path.push(0);
-        return path;
-    }
-
-    tsp(0, 1);
-
-    const path = findPath();
-    const distance = memo[0][1];
+    const path = [0, ...result.path];
+    const distance = result.cost;
     const endTime = performance.now();
+
     console.log("Best tour: ", path);
     console.log("Distance: ", distance);
     console.log(`Held-Karp Execution Time: ${endTime - startTime} milliseconds`);
@@ -129,3 +109,4 @@ function heldKarp(distances) {
         path: path,
     };
 }
+
