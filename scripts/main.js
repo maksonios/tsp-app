@@ -1,6 +1,6 @@
 import {Map} from "./map.js";
-import {heldKarp} from "./heldKarpAlgorithm.js";
-import {solveTSP} from "./bruteForceAlgorithm.js";
+import {heldKarp} from "./algorithms/heldKarpAlgorithm.js";
+import {solveTSP} from "./algorithms/bruteForceAlgorithm.js";
 
 const mapBoxAccessToken = 'pk.eyJ1IjoibWFrdXNvbmlvc3UiLCJhIjoiY2xuZzV3aWFjMHU3NDJqdGN5cXg3bm1lNyJ9.6T8prpHQy2DJ1lP8uOgJlg';
 
