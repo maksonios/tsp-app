@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <meta charset="UTF-8">
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
     <title>Directions</title>
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.1.2/mapbox-gl.css" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        #map {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            width: 100%;
-        }
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
         .sidebar {
             background-color: rgba(255, 255, 255, 0.8);
             margin: 12px;
@@ -25,25 +17,29 @@
             top: 0;
             left: 0;
             z-index: 1;
-            width: 250px; /* Increased width */
+            width: 250px;
             max-height: 90%;
             overflow-y: auto;
             border-radius: 4px;
         }
-        #waypoints {
-            list-style-type: none;
-            padding: 0;
-            margin-bottom: 8px; /* Ensure some space above the buttons */
-        }
+        #waypoints { list-style-type: none; padding: 0; margin-bottom: 8px; }
     </style>
 </head>
 <body>
-    <div id='map'></div>
-    <div class="sidebar">
-        <ul id="waypoints"></ul>
-        <button onclick="buildMatrix(waypoints)">Build matrix</button>
+<div id='map'></div>
+<div class="sidebar">
+    <ul id="waypoints"></ul>
+    <select id="algorithm-selector">
+        <option value="heldKarpAlgorithm">Held-Karp Algorithm</option>
+        <option value="bruteForceAlgorithm">Brute Force Algorithm</option>
+        <option value="antColonyAlgorithm">Ant Colony Optimization</option>
+    </select>
+    <div class="row">
+        <button id="build-route-btn">Build route</button>
         <button id="clear-coordinates-btn">Clear coordinates</button>
+        <button id="test">test</button>
     </div>
-    <script type="module" src="scripts/bruteForceAlgorithm.js"></script>
+</div>
+<script type="module" src="scripts/main.js"></script>
 </body>
 </html>
