@@ -68,8 +68,10 @@ export class Map {
     removeAll() {
         this.#markers.forEach(marker => marker.remove());
         this.#markers.length = 0;
-        this.#map.removeLayer('route');
-        this.#map.removeSource('route');
+        if (this.#map.getSource('route')) {
+            this.#map.removeLayer('route');
+            this.#map.removeSource('route');
+        }
     }
 
     remove(index) {
