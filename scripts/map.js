@@ -23,7 +23,7 @@ export class Map {
         const coordinates = bestTour.map(index => [this.#markers[index].getLngLat().lng, this.#markers[index].getLngLat().lat]);
         const routeGeoJSON = {
             'type': 'Feature',
-            'properties': {},
+            'properties': {},asd
             'geometry': {
                 'type': 'LineString',
                 'coordinates': coordinates
