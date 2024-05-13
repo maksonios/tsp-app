@@ -10,6 +10,7 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
     const distanceMatrix = await map.getDistanceMatrix();
     const selectorValue = document.getElementById('algorithm-selector').value;
     const waypoints = map.markers;
+
     let result;
 
     if (waypoints.length < 2) {
@@ -33,8 +34,23 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
             result = solveTSP(waypoints, distanceMatrix);
             break;
     }
-    map.drawRoute(result.path);
+
+    await map.drawRoute(result.path);
+
+    const steps = map.steps;
+    addSteps(steps);
 });
+
+function addSteps(steps) {
+    const instructions = document.getElementById('instructions');
+    let tripInstructions = '';
+    for (let step of steps) {
+        tripInstructions += `<li>${step.maneuver.instruction}</li>`;
+    }
+    instructions.innerHTML = `<p><strong>Trip duration: ${Math.floor(
+        map.duration / 60
+    )} min 🚗 </strong></p><ol>${tripInstructions}</ol>`;
+}
 
 function updateUI() {
     const waypointsList = document.getElementById("waypoints");
@@ -71,6 +87,9 @@ document.getElementById('clear-coordinates-btn').addEventListener('click', funct
     map.removeAll();
     const waypointsList = document.getElementById("waypoints");
     waypointsList.innerHTML = '';
+
+    const instructions = document.getElementById('instructions');
+    instructions.innerHTML = '';
 });
 
 document.getElementById('test').addEventListener('click', function() {

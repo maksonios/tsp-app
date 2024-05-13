@@ -23,6 +23,18 @@
             border-radius: 4px;
         }
         #waypoints { list-style-type: none; padding: 0; margin-bottom: 8px; }
+        #instructions {
+            position: absolute;
+            margin: 20px;
+            width: 25%;
+            top: 0;
+            bottom: 20%;
+            padding: 20px;
+            background-color: #fff;
+            overflow-y: scroll;
+            font-family: sans-serif;
+            right: 0;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +52,7 @@
         <button id="test">test</button>
     </div>
 </div>
+<div id="instructions"></div>
 <script type="module" src="scripts/script.js"></script>
 </body>
 </html>

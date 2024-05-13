@@ -6,6 +6,8 @@ export class Map {
     #map;
     #onMarkerAdd;
     #onMarkerDragEnd;
+    #steps;
+    #duration;
 
     constructor(accessToken, onMarkerAdd, onMarkerDragEnd) {
         this.#accessToken = accessToken;
@@ -19,86 +21,60 @@ export class Map {
         return this.#markers;
     }
 
-    // Straight lines between markers
-    // drawRoute(bestTour) {
-    //     const coordinates = bestTour.map(index => [this.#markers[index].getLngLat().lng, this.#markers[index].getLngLat().lat]);
-    //     const routeGeoJSON = {
-    //         'type': 'Feature',
-    //         'properties': {},
-    //         'geometry': {
-    //             'type': 'LineString',
-    //             'coordinates': coordinates
-    //         }
-    //     };
-    //
-    //     if (this.#map.getSource('route')) {
-    //         this.#map.removeLayer('route');
-    //         this.#map.removeSource('route');
-    //     }
-    //
-    //     this.#map.addSource('route', {
-    //         'type': 'geojson',
-    //         'data': routeGeoJSON
-    //     });
-    //
-    //     this.#map.addLayer({
-    //         'id': 'route',
-    //         'type': 'line',
-    //         'source': 'route',
-    //         'layout': {
-    //             'line-join': 'round',
-    //             'line-cap': 'round'
-    //         },
-    //         'paint': {
-    //             'line-color': '#888',
-    //             'line-width': 6
-    //         }
-    //     });
-    // }
+    get steps() {
+        return this.#steps;
+    }
 
-    drawRoute(bestTour) {
+    get duration() {
+        return this.#duration;
+    }
+
+    async drawRoute(bestTour) {
         const waypoints = bestTour.map(index => {
             const { lng, lat } = this.#markers[index].getLngLat();
             return `${lng},${lat}`;
         }).join(';');
 
-        const directionsUrl = `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?geometries=geojson&access_token=${this.#accessToken}`;
+        const query = await fetch(
+            `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?steps=true&geometries=geojson&access_token=${this.#accessToken}`,
+            { method: 'GET' }
+        );
 
-        fetch(directionsUrl)
-            .then(response => response.json())
-            .then(data => {
-                const routeGeoJSON = data.routes[0].geometry;
+        const json = await query.json();
+        const data = json.routes[0];
 
-                if (this.#map.getSource('route')) {
-                    this.#map.removeLayer('route');
-                    this.#map.removeSource('route');
-                }
+        this.#steps = data.legs[0].steps;
+        this.#duration = data.duration;
 
-                this.#map.addSource('route', {
-                    'type': 'geojson',
-                    'data': {
-                        'type': 'Feature',
-                        'geometry': routeGeoJSON
-                    }
-                });
+        const routeGeoJSON = json.routes[0].geometry;
 
-                this.#map.addLayer({
-                    'id': 'route',
-                    'type': 'line',
-                    'source': 'route',
-                    'layout': {
-                        'line-join': 'round',
-                        'line-cap': 'round'
-                    },
-                    'paint': {
-                        'line-color': '#888',
-                        'line-width': 6
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching Directions API data:', error));
+        if (this.#map.getSource('route')) {
+            this.#map.removeLayer('route');
+            this.#map.removeSource('route');
+        }
+
+        this.#map.addSource('route', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': routeGeoJSON
+            }
+        });
+
+        this.#map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#888',
+                'line-width': 6
+            }
+        });
     }
-
 
     async getDistanceMatrix() {
         const coordinates = this.#markers.map(marker => [marker.getLngLat().lng, marker.getLngLat().lat].join(',')).join(';');
