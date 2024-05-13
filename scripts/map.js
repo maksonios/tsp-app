@@ -57,8 +57,9 @@ export class Map {
             'type': 'geojson',
             'data': {
                 'type': 'Feature',
-                'geometry': routeGeoJSON
-            }
+                'geometry': routeGeoJSON,
+            },
+            'lineMetrics': true
         });
 
         this.#map.addLayer({
@@ -70,8 +71,26 @@ export class Map {
                 'line-cap': 'round'
             },
             'paint': {
-                'line-color': '#888',
-                'line-width': 6
+                'line-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['line-progress'],
+                    0, "#FF0000",
+                    0.1, "#FF7F00",
+                    0.3, "#FFFF00",
+                    0.5, "#00FF00",
+                    0.7, "#0000FF",
+                    1, "#8B00FF"
+                ],
+                'line-width': 6,
+                'line-gradient': [
+                    'interpolate',
+                    ['linear'],
+                    ['line-progress'],
+                    0, 'rgba(255, 0, 0, 1)',
+                    1, 'rgba(0, 0, 255, 1)'
+                ],
+                'line-dasharray': [1, 2]
             }
         });
     }
