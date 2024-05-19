@@ -36,7 +36,7 @@ export class Map {
         }).join(';');
 
         const query = await fetch(
-            `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?steps=true&geometries=geojson&access_token=${this.#accessToken}`,
+            `https://api.mapbox.com/directions/v5/mapbox/driving/${waypoints}?steps=true&language=uk&geometries=geojson&access_token=${this.#accessToken}`,
             { method: 'GET' }
         );
 
@@ -131,7 +131,7 @@ export class Map {
             container: 'map',
             style: 'mapbox://styles/mapbox/streets-v12',
             center: [24.027, 49.842],
-            zoom: 12
+            zoom: 12,
         });
         this.#map.on('click', async function (e) {
             const randomColor = markerColor[Math.floor(Math.random() * markerColor.length)];
