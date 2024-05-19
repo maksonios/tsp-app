@@ -52,19 +52,6 @@ function addSteps(steps) {
     )} min 🚗 </strong></p><ol>${tripInstructions}</ol>`;
 }
 
-function updateUI() {
-    const waypointsList = document.getElementById("waypoints");
-    waypointsList.innerHTML = '';
-    const markers = map.markers;
-
-    markers.forEach((marker, index) => {
-        const coordinates = marker.getLngLat();
-        const li = document.createElement("li");
-        li.textContent = `Point ${String.fromCharCode(65 + index)} (${coordinates.lng.toFixed(3)}, ${coordinates.lat.toFixed(3)})`;
-        waypointsList.appendChild(li);
-    });
-}
-
 function onMarkerAdd(marker, index) {
     const coordinates = marker.getLngLat();
     const waypointsList = document.getElementById("waypoints");
@@ -90,9 +77,4 @@ document.getElementById('clear-coordinates-btn').addEventListener('click', funct
 
     const instructions = document.getElementById('instructions');
     instructions.innerHTML = '';
-});
-
-document.getElementById('test').addEventListener('click', function() {
-    map.remove(0);
-    updateUI();
 });
