@@ -89,6 +89,14 @@
             font-family: sans-serif;
             right: 0;
         }
+
+        #distance, #best-tour {
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
 <body>
@@ -98,11 +106,14 @@
     <select id="algorithm-selector">
         <option value="heldKarpAlgorithm">Held-Karp Algorithm</option>
         <option value="bruteForceAlgorithm">Brute Force Algorithm</option>
+        <option value="defaultAlgorithm">Default Algorithm</option>
     </select>
     <div class="row">
         <button id="build-route-btn">Build route</button>
         <button id="clear-coordinates-btn">Clear coordinates</button>
     </div>
+    <div id="distance">Distance: </div>
+    <div id="best-tour">Best Tour: </div>
 </div>
 <div id="instructions"></div>
 <script type="module" src="scripts/script.js"></script>

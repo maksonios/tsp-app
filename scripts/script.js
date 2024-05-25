@@ -1,6 +1,7 @@
 import {Map} from "./map.js";
 import {heldKarp} from "./algorithms/heldKarpAlgorithm.js";
 import {solveTSP} from "./algorithms/bruteForceAlgorithm.js";
+import {visitInOrder} from "./algorithms/defaultAlgorithm.js";
 
 const mapBoxAccessToken = 'pk.eyJ1IjoibWFrdXNvbmlvc3UiLCJhIjoiY2xuZzV3aWFjMHU3NDJqdGN5cXg3bm1lNyJ9.6T8prpHQy2DJ1lP8uOgJlg';
 
@@ -30,12 +31,25 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
         case 'bruteForceAlgorithm':
             result = solveTSP(waypoints, distanceMatrix);
             break;
+        case 'defaultAlgorithm':
+            result = visitInOrder(distanceMatrix);
+            break;
     }
 
     await map.drawRoute(result.path);
 
     const steps = map.steps;
     addSteps(steps);
+
+    let distance = result.distance;
+    let path = result.path;
+
+    let formattedDistance = (distance / 1000).toFixed(1);
+    document.getElementById('distance').innerText = `Distance: ${formattedDistance} km`;
+
+    const waypointNames = path.map(index => String.fromCharCode(65 + index));
+    document.getElementById('best-tour').innerText = `Best Tour: ${waypointNames.join(' -> ')}`;
+
 });
 
 function addSteps(steps) {
@@ -74,4 +88,10 @@ document.getElementById('clear-coordinates-btn').addEventListener('click', funct
 
     const instructions = document.getElementById('instructions');
     instructions.innerHTML = '';
+
+    const distance = document.getElementById('distance');
+    distance.innerText = 'Distance: ';
+
+    const bestTour = document.getElementById('best-tour');
+    bestTour.innerText = 'Best Tour: ';
 });
