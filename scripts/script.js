@@ -30,9 +30,6 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
         case 'bruteForceAlgorithm':
             result = solveTSP(waypoints, distanceMatrix);
             break;
-        case 'antColonyAlgorithm':
-            result = solveTSP(waypoints, distanceMatrix);
-            break;
     }
 
     await map.drawRoute(result.path);
