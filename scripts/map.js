@@ -103,7 +103,12 @@ export class Map {
         );
         const json = await query.json();
         const distances = json.distances;
-        return this.#adjustDistancesWithParameters(distances);
+        const defaultDistanceMatrix = JSON.parse(JSON.stringify(distances));
+        const adjustedDistances = this.#adjustDistancesWithParameters(distances);
+        return {
+            defaultDistanceMatrix: defaultDistanceMatrix,
+            adjustedDistanceMatrix: adjustedDistances
+        }
     }
 
     removeAll() {
@@ -163,7 +168,7 @@ export class Map {
             const param3 = marker.parameters.param3;
 
             const adjustmentFactor = 1 - (weights.param1 * param1 + weights.param2 * param2 + weights.param3 * param3) / 10;
-            console.log("adjustmentFactor: ", adjustmentFactor);
+            console.log(adjustmentFactor);
 
             for (let j = 0; j < distances.length; j++) {
                 if (i !== j) {

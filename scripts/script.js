@@ -9,10 +9,13 @@ let map = new Map(mapBoxAccessToken, onMarkerAdd, onMarkerDragEnd);
 
 document.getElementById('build-route-btn').addEventListener('click', async function () {
     const distanceMatrix = await map.getDistanceMatrix();
+    console.log(JSON.stringify(distanceMatrix.defaultDistanceMatrix));
+    console.log(JSON.stringify(distanceMatrix.adjustedDistanceMatrix));
     const selectorValue = document.getElementById('algorithm-selector').value;
     const waypoints = map.markers;
 
     let result;
+    let resultInitial;
 
     if (waypoints.length < 2) {
         alert('Please add at least two waypoints');
@@ -26,13 +29,16 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
 
     switch (selectorValue) {
         case 'heldKarpAlgorithm':
-            result = heldKarp(distanceMatrix);
+            result = heldKarp(distanceMatrix.adjustedDistanceMatrix);
+            resultInitial = heldKarp(distanceMatrix.defaultDistanceMatrix);
             break;
         case 'bruteForceAlgorithm':
-            result = solveTSP(waypoints, distanceMatrix);
+            result = solveTSP(waypoints, distanceMatrix.adjustedDistanceMatrix);
+            resultInitial = solveTSP(waypoints, distanceMatrix.defaultDistanceMatrix);
             break;
         case 'defaultAlgorithm':
-            result = visitInOrder(distanceMatrix);
+            result = visitInOrder(distanceMatrix.adjustedDistanceMatrix);
+            resultInitial = visitInOrder(distanceMatrix.defaultDistanceMatrix);
             break;
     }
 
@@ -41,8 +47,12 @@ document.getElementById('build-route-btn').addEventListener('click', async funct
     const steps = map.steps;
     addSteps(steps);
 
-    let distance = result.distance;
+    let distance = resultInitial.distance;
+    let distanceAdjusted = result.distance;
     let path = result.path;
+
+    console.log("initial distance: ", distance);
+    console.log("adjusted distance: ", distanceAdjusted);
 
     let formattedDistance = (distance / 1000).toFixed(1);
     document.getElementById('distance').innerText = `Distance: ${formattedDistance} km`;
